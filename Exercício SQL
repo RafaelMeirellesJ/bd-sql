@@ -1,0 +1,146 @@
+-- Criando database
+create database campeonato;
+use campeonato;
+
+create table times(
+id int not null auto_increment,
+nome text not null,
+uf text not null,
+qtd_torcedores int not null,
+fundacao date not null,
+qtd_atletas int,
+primary key(id)
+);
+
+insert into times(nome, uf, qtd_torcedores, fundacao, qtd_atletas) VALUES
+('Flamengo', 'RJ', 40000000, '1895-11-17', 30),
+('Corinthians', 'SP', 35700000, '1910-09-01', 28),
+('São Paulo', 'SP', 17300000, '1930-01-25', 25),
+('Palmeiras', 'SP', 18000000, '1914-08-26', 26),
+('Grêmio', 'RS', 8100000, '1903-09-15', 22),
+('Internacional', 'RS', 6950000, '1909-04-04', 27),
+('Cruzeiro', 'MG', 8200000, '1921-01-02', 24),
+('Atlético Mineiro', 'MG', 8000000, '1908-03-25', 26),
+('Vasco', 'RJ', 6000000, '1898-08-21', 25),
+('Botafogo', 'RJ', 4300000, '1904-07-01', 23),
+('Fluminense', 'RJ', 3600000, '1902-07-21', 26),
+('Santos', 'SP', 5000000, '1912-04-14', 28),
+('Athletico-PR', 'PR', 4000000, '1924-03-26', 25),
+('Coritiba', 'PR', 3000000, '1909-10-12', 22),
+('Bahia', 'BA', 3300000, '1931-01-01', 23),
+('Vitória', 'BA', 1900000, '1899-05-13', 21),
+('Fortaleza', 'CE', 2600000, '1918-10-18', 22),
+('Ceará', 'CE', 2400000, '1914-06-02', 24),
+('Sport', 'PE', 2600000, '1905-05-13', 24),
+('Santa Cruz', 'PE', 2000000, '1914-02-03', 22);
+
+-- Exercícios
+
+-- 1.Selecione todos os campos da tabela "times".
+
+select *
+from times;
+
+-- 2.Selecione apenas os campos "nome" e “uf” da tabela "times".
+
+select nome, uf
+from times;
+
+-- 3.Selecione apenas os times que são do estado do Rio de Janeiro 
+-- e que tem uma torcida maior que 3.6 milhões.
+
+select nome,uf, qtd_torcedores 
+from times 
+where  qtd_torcedores <= 3600000 and uf = 'RJ'
+group by uf = 'RJ';
+
+-- 4.Selecione apenas os times que têm mais de 10 milhões de torcedores.
+
+select distinct nome, qtd_torcedores
+from times
+where qtd_torcedores > 10000000;
+
+-- 5.Selecione apenas os times fundados
+-- antes de 1912 e que são dos estados de SP e MG.
+
+select nome,uf, fundacao 
+from times 
+where uf in ('SP', 'MG') and fundacao < '1912-12-31';
+
+-- 6.Selecione apenas os times que têm menos de 25 atletas e que não são do estado de PE.
+
+select nome, uf, qtd_atletas
+from times
+where qtd_atletas < 25 and uf != 'PE';
+
+-- 7.Selecione o time com o maior e menor número de torcedores.
+
+select nome, qtd_torcedores
+from times
+order by  qtd_torcedores desc
+limit 1; 
+
+select nome, qtd_torcedores
+from times 
+order by qtd_torcedores asc
+limit 1;
+
+-- 8.Selecione a média de torcedores de todos os times.
+
+select avg(qtd_torcedores) as média
+from times;
+
+-- 9.Selecione os times que tem o nome iniciado com a letra S 
+-- e que tem menos de 3 milhões de torcedores.
+
+select nome, qtd_torcedores
+from times
+where nome like 'S%' 
+and qtd_torcedores < 3000000;
+
+-- 10.Selecione a quantidade de times que tem mais de 25 jogadores.
+
+select nome, qtd_atletas
+from times
+where qtd_atletas > 25;
+
+-- 11.Selecione os times dos seguintes estados: RJ, SP e MG (Façam 2 sqls para esse item)
+
+select nome, uf
+from times 
+where uf in ('RJ','SP','MG');
+
+-- 12.Selecione de forma única, a informação de UF dos times;
+
+select distinct uf 
+from times;
+
+-- 13.Selecione os time que tem data de fundação entre 01/01/1904 a 31/12/1930.
+
+select nome, fundacao
+from times 
+where ('1904-01-01' < fundacao < '1930-12-31');
+
+-- 14.Exclua os times que tem no nome alguma letra f.
+
+delete from times 
+where nome like '%f%';
+
+-- 15.Atualize a informação de quantidade de atletas dos time iniciados 
+-- com a letra C para 40 jogadores.
+
+select nome, qtd-atletas
+from times
+where nome like 'C%' 
+and qtd_atletas = 40;
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,222 @@
+-- 1.Crie um BD com nome Clinica:
+
+create database clinicas;
+use clinicas;
+
+-- 2.Crie as seguintes tabelas neste BD, considerando que 
+-- os atributos sublinhados são chaves primárias e os em itálico são chaves estrangeiras:
+
+create table ambulatorios (
+   nroa integer,
+   andar numeric(3) not null,
+   capacidade smallint,
+   primary key (nroa)
+);
+
+create table medicos (
+   codm integer,
+   nome varchar(40) not null,
+   idade smallint not null,
+   especialidade char (20),
+   CPF numeric(11) unique,
+   cidade varchar(30),
+   nroa integer,
+primary key (codm)
+);
+
+alter table medicos add foreign key (nroa)
+references ambulatorios (nroa);
+
+create table pacientes (
+   codp int, 
+   nome varchar(40) not null, 
+   idade smallint not null, 
+   cidade char(30),
+   CPF numeric(11) unique, 
+   doenca varchar(40) not null,
+primary key (codp)
+);
+
+create table funcionarios (
+   codf int, 
+   nome varchar(40) not null, 
+   idade smallint, 
+   CPF numeric(11)unique, 
+   cidade varchar(30), 
+   salario numeric(10), 
+   cargo varchar(20),
+primary key (codf)
+);
+
+create table consultas (
+    codm integer,
+    codp integer,
+    dt date,
+    hora time
+);
+
+alter table consultas add foreign key (codm)
+references medicos (codm);
+
+alter table consultas add foreign key (codp)
+references pacientes (codp);
+
+-- 3.Crie a coluna nroa (int) na tabela Funcionarios:
+
+alter table funcionarios 
+add nroa integer;
+
+alter table funcionarios add foreign key (nroa)
+references ambulatorios (nroa);
+
+-- 4.Crie os seguintes índices:
+-- -Medicos: CPF (único)
+-- -Pacientes: doenca
+
+create index CPF
+on medicos (CPF);
+
+create index doenca 
+on pacientes (doenca);
+
+-- 5.Remover o indíce doenca em Pacientes:
+
+drop index doenca 
+on pacientes;
+
+-- 6.Remover as colunas cargo e nroa da tabela de funcionarios:
+
+alter table funcionarios
+drop column cargo,
+drop column nroa;
+
+-- Exercícios: popular as tabelas
+
+
+-- Tabela ambulatorios:
+
+insert into ambulatorios (nroa, andar, capacidade)
+values
+(1, 1, 30),
+(2, 1, 50),
+(3, 2, 40),
+(4, 2, 25),
+(5, 2, 55);
+
+-- Tabela medicos:
+
+insert into medicos (codm, nome, idade, especialidade, CPF, cidade, nroa)
+values
+(1, 'Joao', 40, 'ortopedia', 10000100000, 'Florianopolis', 1),
+(2, 'Maria', 42, 'traumatolodia', 10000110000, 'Blumenau', 2),
+(3, 'Pedro', 51, 'pediatria', 11000100000, 'Sao Jose', 2),
+(4, 'Carlos', 28, 'ortopedia', 11000110000, 'Joinville', 5),
+(5, 'Marcia', 33, 'neurologia', 11000111000, 'Biguacu', 3);
+
+-- Tabela paceintes:
+
+insert into pacientes (codp, nome, idade, cidade, CPF, doenca)
+values 
+(1,'Ana', 20, 'Florianopolis', 20000200000, 'gripe'),
+(2,'Paulo', 24, 'Palhoca', 20000220000, 'fratura'),
+(3, 'Lucia', 30, 'Biguacu', 22000200000, 'tendinite'),
+(4, 'Carlos', 28, 'Joinville', 11000110000, 'sarampo');
+
+-- Tabela funcionarios:
+
+insert into funcionarios (codf, nome, idade, cidade, salario, CPF)
+values 
+(1, 'Rita', 32, 'Sao Jose', 1200, 20000100000),
+(2, 'Maria', 55, 'Palhoca', 1220, 30000110000),
+(3, 'Caio', 45, 'Florianopolis', 1100, 41000100000),
+(4, 'Carlos', 44, 'Florianopolis', 1200, 51000110000),
+(5, 'Paula', 33, 'Florianopolis', 2500, 61000111000);
+
+-- Tabela consultas:
+
+insert into consultas (codm, codp, dt, hora)
+values
+(1, 1, '2006-06-12', '14:00'),
+(1, 4, '2006-06-13', '10:00'),
+(2, 1, '2006-06-13', '9:00'),
+(2, 2, '2006-06-13', '11:00'),
+(2, 3, '2006-06-14', '14:00'),
+(2, 4, '2006-06-14', '17:00'),
+(3, 1, '2006-06-19', '18:00'),
+(3, 3, '2006-06-12', '10:00'),
+(3, 4, '2006-06-19', '13:00'),
+(4, 4, '2006-06-20', '13:00'),
+(4, 4, '2006-06-22', '19:30');
+
+-- Realizar as seguintes atualizações no BD:
+
+-- 1) O paciente Paulo mudou-se para Ilhota.
+
+select nome, cidade 
+from pacientes;
+
+update pacientes 
+set cidade = 'Ilhota'
+where codp = 2;
+
+-- 2) A consulta do médico 1 com o paciente 4 
+-- passou para às 12:00 horas do dia 4 de Julho de 2006.
+
+select distinct codm, codp, hora, dt
+from consultas
+where codm = 1 and codp = 4;
+
+update consultas
+set hora = '12:00' , dt = '2006-07-04'
+where codp = 4;
+
+-- 3) A paciente Ana fez aniversário e sua doença agora é cancer.
+
+update pacientes
+set idade = 21, doenca = 'cancer'
+where codp = 1;
+
+-- 4) A consulta do médico Pedro (codm = 3) com o paciente Carlos (codp = 4) 
+-- passou para uma hora e meia depois.
+
+select distinct hora
+from consultas
+where codm = 3 and codp = 4;
+
+update consultas 
+set hora = '13:30'
+where codm = 3 and codp = 4;
+
+-- 5) O funcionário Carlos (codf = 4) deixou a clínica.
+
+select * from funcionarios;
+
+delete from funcionarios 
+where codf = 4;
+
+-- 6) As consultas marcadas após as 19 horas foram canceladas.
+
+select * from consultas;
+
+delete from consultas 
+where hora > '19:00';
+
+-- 7) Os pacientes com câncer ou idade inferior a 10 anos deixaram a clínica.
+
+select * from pacientes;
+
+delete from consultas
+where codp = 1;
+
+delete from pacientes
+where idade < 10 or doenca = 'cancer';
+
+-- 8) Os médicos que residem em Biguacu e Blumenau deixaram a clínica.
+
+select codm,cidade from medicos;
+
+delete from consultas 
+where codm in (2,5);
+
+delete from medicos
+where cidade = 'Biguacu' or cidade = 'Blumenau';
